@@ -102,31 +102,35 @@
 .enhancedcombathud-rmss .rmss-search-bar {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 6px;
+  gap: 8px;
+  padding: 8px 10px;
   width: 100%;
+  pointer-events: auto;
 }
 
 .enhancedcombathud-rmss .rmss-search-input {
   flex: 1;
   min-width: 0;
-  height: 24px;
-  font-size: 0.8rem;
+  height: 44px;
+  font-size: 1.5rem;
   background: rgba(0, 0, 0, 0.35);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
-  padding: 0 6px;
+  padding: 0 10px;
+  pointer-events: auto;
+  user-select: text;
 }
 
 .enhancedcombathud-rmss .rmss-search-icon,
 .enhancedcombathud-rmss .rmss-search-clear,
 .enhancedcombathud-rmss .rmss-filter-button {
-  width: 20px;
-  height: 20px;
+  width: 36px;
+  height: 36px;
   flex: 0 0 auto;
   cursor: pointer;
   opacity: 0.75;
+  pointer-events: auto;
 }
 
 .enhancedcombathud-rmss .rmss-search-icon img,
@@ -144,14 +148,43 @@
 
 .enhancedcombathud-rmss .rmss-search-filters {
   display: flex;
-  gap: 2px;
+  gap: 6px;
 }
 
 .enhancedcombathud-rmss .rmss-search-summary {
   flex: 0 0 auto;
-  font-size: 0.7rem;
+  font-size: 1.2rem;
   opacity: 0.7;
   white-space: nowrap;
+}
+
+/* ────────────────────────────────────────────────
+   Macro drawer - Argon's default drawer text is small; RMU compensates with its own
+   custom reskin (filroden-theme.css) that we deliberately didn't bring over, so it needs its
+   own bump here. Covers both plausible class shapes for the drawer row/button.
+──────────────────────────────────────────────── */
+.enhancedcombathud-rmss .ability-menu .ability,
+.enhancedcombathud-rmss .ability-menu .collapsible-panel .ability,
+.enhancedcombathud-rmss .drawer .ability {
+  font-size: 1.75rem;
+  line-height: 1.4;
+  padding: 6px 10px;
+}
+
+.enhancedcombathud-rmss .ability-menu .ability *,
+.enhancedcombathud-rmss .drawer .ability * {
+  font-size: inherit;
+}
+
+/* ────────────────────────────────────────────────
+   Portrait stat block (Hits/PP) - same "Argon default too small" issue as the drawer.
+──────────────────────────────────────────────── */
+.extended-combat-hud .portrait-hud .portrait-stat-block {
+  font-size: 1.75rem;
+}
+
+.extended-combat-hud .portrait-hud .portrait-stat-block.player-details .player-detail {
+  font-size: 1.5rem;
 }
 
 /* ────────────────────────────────────────────────
