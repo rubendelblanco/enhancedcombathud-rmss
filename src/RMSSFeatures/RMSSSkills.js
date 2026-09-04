@@ -251,6 +251,7 @@ export function defineSkillsMain(CoreHUD) {
 
             const panel = new ButtonPanel({ id: "rmss-skills", buttons });
             UIGuards.attachPanelInteractionGuards(panel);
+            UIGuards.capPanelHeight(panel);
 
             const skillFilters = [
                 { id: "fav", dataKey: "favorite", icon: ICONS.star, tooltip: "Show Favorites Only" },

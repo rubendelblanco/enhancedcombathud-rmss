@@ -2,7 +2,7 @@
     "id": "enhancedcombathud-rmss",
     "title": "Argon - Combat HUD (RMSS)",
     "description": "Argon Combat HUD integration for the Rolemaster Standard System (RMSS).",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "authors": [{ "name": "Ruben del Blanco" }],
     "esmodules": ["main.js"],
     "styles": ["styles/enhancedcombathud-rmss.css"],

@@ -277,6 +277,7 @@ export function defineSpellsMain(CoreHUD) {
 
             const panel = new ButtonPanel({ id: "rmss-spells", buttons });
             UIGuards.attachPanelInteractionGuards(panel);
+            UIGuards.capPanelHeight(panel);
 
             const spellFilters = [
                 { id: "fav", dataKey: "favorite", icon: ICONS.star, tooltip: "Show Favorites Only" },

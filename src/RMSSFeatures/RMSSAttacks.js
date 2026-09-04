@@ -118,6 +118,7 @@ export function defineAttacksMain(CoreHUD) {
             const buttons = this._items.map((item) => new RMSSAttackActionButton(item, this.key));
             const panel = new ButtonPanel({ id: `rmss-attacks-${this.key}`, buttons });
             UIGuards.attachPanelInteractionGuards(panel);
+            UIGuards.capPanelHeight(panel);
             return panel;
         }
     }

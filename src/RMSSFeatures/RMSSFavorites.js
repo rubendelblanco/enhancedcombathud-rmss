@@ -176,6 +176,7 @@ export function defineFavoritesMain(CoreHUD) {
 
             const panel = new ButtonPanel({ id: "rmss-favorite-skills", buttons });
             UIGuards.attachPanelInteractionGuards(panel);
+            UIGuards.capPanelHeight(panel);
             return panel;
         }
     }
@@ -223,6 +224,7 @@ export function defineFavoritesMain(CoreHUD) {
 
             const panel = new ButtonPanel({ id: "rmss-favorite-spells", buttons });
             UIGuards.attachPanelInteractionGuards(panel);
+            UIGuards.capPanelHeight(panel);
             return panel;
         }
     }

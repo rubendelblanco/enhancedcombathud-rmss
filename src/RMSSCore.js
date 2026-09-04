@@ -383,6 +383,26 @@ const UIGuards = {
         };
         requestAnimationFrame(tryAttach);
     },
+
+    /**
+     * Cap a flyout panel's height and let it scroll instead of growing without bound - rmss can
+     * have a lot of skill categories (~59 possible), and category headers are always shown (only
+     * the skill tiles within an open category hide/show), so a well-rounded character could end
+     * up with a very tall header list. Argon's own ButtonPanel overflow behavior isn't confirmed,
+     * so this sets it directly rather than relying on it.
+     * @param {ButtonPanel} panel
+     * @param {number} [maxHeightVh=70]
+     */
+    capPanelHeight(panel, maxHeightVh = 70) {
+        const tryCap = () => {
+            const el = panel?.element;
+            if (!el) return requestAnimationFrame(tryCap);
+            el.style.maxHeight = `${maxHeightVh}vh`;
+            el.style.overflowY = "auto";
+            el.style.overflowX = "hidden";
+        };
+        requestAnimationFrame(tryCap);
+    },
 };
 
 // -----------------------------------------------------------------------------
