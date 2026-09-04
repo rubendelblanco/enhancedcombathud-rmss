@@ -1,0 +1,172 @@
+/* enhancedcombathud-rmss — uses Argon's own --ech-* design tokens (the host theme), not a
+   custom reskin, so the HUD matches whatever Argon theme/settings the table already runs. */
+
+.enhancedcombathud-rmss .rmss-button-relative { position: relative !important; }
+.enhancedcombathud-rmss .rmss-overflow-hidden { overflow: hidden !important; }
+.enhancedcombathud-rmss .rmss-interactive-button {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+/* ────────────────────────────────────────────────
+   Value overlay (OB / Total / SCR / Lvl)
+──────────────────────────────────────────────── */
+.enhancedcombathud-rmss .rmss-value-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.enhancedcombathud-rmss .rmss-value-overlay-text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  mix-blend-mode: normal;
+}
+
+.enhancedcombathud-rmss .rmss-value-overlay-label,
+.enhancedcombathud-rmss .rmss-value-overlay-number {
+  color: #fff;
+  filter:
+    drop-shadow(0 0 1px rgba(0, 0, 0, 0.95))
+    drop-shadow(0 0 6px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 0 14px rgba(0, 0, 0, 0.7));
+}
+
+.enhancedcombathud-rmss .rmss-value-overlay-label {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  opacity: 0.95;
+  margin-bottom: 2px;
+}
+
+.enhancedcombathud-rmss .rmss-value-overlay-number {
+  font-size: 2.25rem;
+  font-weight: 900;
+  line-height: 2.5rem;
+}
+
+/* ────────────────────────────────────────────────
+   Chips (favorite / instant markers on skill/spell tiles)
+──────────────────────────────────────────────── */
+.enhancedcombathud-rmss .rmss-chip-container {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: flex;
+  gap: 2px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.enhancedcombathud-rmss .rmss-chip {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+/* ────────────────────────────────────────────────
+   Accordion category headers (Skills / Spells)
+──────────────────────────────────────────────── */
+.enhancedcombathud-rmss .rmss-skill-header,
+.enhancedcombathud-rmss .rmss-spell-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.enhancedcombathud-rmss .rmss-skill-header.open,
+.enhancedcombathud-rmss .rmss-spell-header.open {
+  opacity: 1;
+  border-bottom: 2px solid var(--ech-fore, #fff);
+}
+
+/* ────────────────────────────────────────────────
+   Search / filter bar
+──────────────────────────────────────────────── */
+.enhancedcombathud-rmss .rmss-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  width: 100%;
+}
+
+.enhancedcombathud-rmss .rmss-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0 6px;
+}
+
+.enhancedcombathud-rmss .rmss-search-icon,
+.enhancedcombathud-rmss .rmss-search-clear,
+.enhancedcombathud-rmss .rmss-filter-button {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.enhancedcombathud-rmss .rmss-search-icon img,
+.enhancedcombathud-rmss .rmss-search-clear img,
+.enhancedcombathud-rmss .rmss-filter-button img {
+  width: 100%;
+  height: 100%;
+  filter: invert(1);
+}
+
+.enhancedcombathud-rmss .rmss-filter-button.active {
+  opacity: 1;
+  filter: drop-shadow(0 0 3px var(--ech-fore, #fff));
+}
+
+.enhancedcombathud-rmss .rmss-search-filters {
+  display: flex;
+  gap: 2px;
+}
+
+.enhancedcombathud-rmss .rmss-search-summary {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* ────────────────────────────────────────────────
+   Disabled state
+──────────────────────────────────────────────── */
+.enhancedcombathud-rmss .action-element.disabled {
+  cursor: not-allowed !important;
+}
+
+.enhancedcombathud-rmss .action-element.disabled::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.28) 0 6px, rgba(0, 0, 0, 0.16) 6px 12px);
+  pointer-events: none;
+  z-index: 2;
+}
