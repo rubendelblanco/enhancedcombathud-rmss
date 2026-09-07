@@ -201,7 +201,7 @@ export function defineFavoritesMain(CoreHUD) {
         }
         async _getPanel() {
             const actor = RMSSData.getActiveActor();
-            const entries = RMSSData.getFavoriteSpells(actor);
+            const entries = await RMSSData.getFavoriteSpells(actor);
 
             let buttons;
             if (!entries.length) {

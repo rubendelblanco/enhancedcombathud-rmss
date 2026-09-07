@@ -7,6 +7,8 @@
  * skill, spell/spell_list) - the same data every existing RMSS sheet already renders from.
  */
 
+import { SYS_PATH } from "./RMSSCore.js";
+
 /**
  * @returns {Token|null} the token currently bound to the HUD
  */
@@ -143,25 +145,34 @@ function getSpellLists(actor) {
  * Spells contained in a spell_list use the same container-flag mechanism as every other
  * container item in rmss (see ContainerHandler / item_service.js `deleteContainer`), not a
  * nested array - spell_list.system.spells stays empty on this codebase's actual data.
+ *
+ * Capped to the list's currently-accessible level, same rule as every RMSS sheet: for a
+ * character, the linked skill's ranks; for an NPC/creature, the list's own flags.rmss.listLevel
+ * (falling back to the actor's level) - see ItemService.getSpellListMaxLevel. A caster with,
+ * say, 5 ranks in "Fire Law" only has levels 1-5 of that list actually available to them, even
+ * though every level up to 50 exists as an embedded Item on the actor.
  * @param {Actor} actor
  * @param {Item} spellListItem
- * @returns {Item[]} sorted by level then name
+ * @returns {Promise<Item[]>} sorted by level then name
  */
-function getSpellsInList(actor, spellListItem) {
+async function getSpellsInList(actor, spellListItem) {
     if (!actor || !spellListItem) return [];
+    const { default: ItemService } = await import(SYS_PATH("module/actors/services/item_service.js"));
+    const maxLevel = ItemService.getSpellListMaxLevel(actor, spellListItem);
     return actor.items
         .filter((i) => i.type === "spell" && i.flags?.rmss?.containerId === spellListItem.id)
+        .filter((i) => (parseInt(i.system?.level, 10) || 0) <= maxLevel)
         .sort((a, b) => (Number(a.system?.level) || 0) - (Number(b.system?.level) || 0) || a.name.localeCompare(b.name));
 }
 
 /**
  * @param {Actor} actor
- * @returns {Map<string, { list: Item, spells: Item[] }>} keyed by spell_list item id, empty lists omitted
+ * @returns {Promise<Map<string, { list: Item, spells: Item[] }>>} keyed by spell_list item id, empty lists omitted
  */
-function getGroupedSpells(actor) {
+async function getGroupedSpells(actor) {
     const grouped = new Map();
     for (const list of getSpellLists(actor)) {
-        const spells = getSpellsInList(actor, list);
+        const spells = await getSpellsInList(actor, list);
         if (spells.length === 0) continue;
         grouped.set(list.id, { list, spells });
     }
@@ -170,11 +181,12 @@ function getGroupedSpells(actor) {
 
 /**
  * @param {Actor} actor
- * @returns {Array<{ spell: Item, list: Item }>} favorite spells with their owning spell_list, sorted by level then name
+ * @returns {Promise<Array<{ spell: Item, list: Item }>>} favorite spells (within the list's
+ *   currently-accessible level) with their owning spell_list, sorted by level then name
  */
-function getFavoriteSpells(actor) {
+async function getFavoriteSpells(actor) {
     const out = [];
-    for (const { list, spells } of getGroupedSpells(actor).values()) {
+    for (const { list, spells } of (await getGroupedSpells(actor)).values()) {
         for (const spell of spells) {
             if (spell.system?.favorite === true) out.push({ spell, list });
         }

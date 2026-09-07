@@ -247,7 +247,7 @@ export function defineSpellsMain(CoreHUD) {
 
         async _getPanel() {
             const actor = RMSSData.getActiveActor();
-            const grouped = RMSSData.getGroupedSpells(actor);
+            const grouped = await RMSSData.getGroupedSpells(actor);
 
             if (!grouped.size) {
                 const empty = new (class NoSpellsButton extends ActionButton {
