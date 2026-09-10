@@ -90,7 +90,7 @@ export function defineSpellsMain(CoreHUD) {
             return realm ? `${this.spellListItem.name} (${realm})` : this.spellListItem.name;
         }
         get icon() {
-            return "";
+            return this.spellListItem.img || ICONS.spells_muted;
         }
         get isInteractive() {
             return true;
