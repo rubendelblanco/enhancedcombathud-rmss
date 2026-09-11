@@ -9,7 +9,7 @@
  * No attack logic lives in this file.
  */
 
-import { ICONS, RMSSUtils, UIGuards } from "../RMSSCore.js";
+import { ICONS, RMSSUtils, UIGuards, SYS_PATH } from "../RMSSCore.js";
 import { RMSSData } from "../RMSSData.js";
 
 const CAT_LABELS = {
@@ -93,6 +93,59 @@ export function defineAttacksMain(CoreHUD) {
         }
     }
 
+    class RMSSRandomAttackButton extends ActionButton {
+        get isInteractive() {
+            return true;
+        }
+
+        get label() {
+            return game.i18n.localize("rmss.creature_attack.random_attack");
+        }
+
+        get icon() {
+            return ICONS.natural;
+        }
+
+        get hasTooltip() {
+            return true;
+        }
+
+        async getTooltipData() {
+            return {
+                title: this.label,
+                subtitle: "Creature attack",
+                details: RMSSUtils.formatTooltipDetails([
+                    { label: "Info", value: game.i18n.localize("rmss.creature_attack.random_attack_hint") },
+                ]),
+                footerText: ["Left-Click: Roll and attack current target"],
+            };
+        }
+
+        async _onMouseDown(event) {
+            if (event.button !== 0) return;
+            event.preventDefault();
+            event.stopPropagation();
+
+            const actor = RMSSData.getActiveActor();
+            if (!actor) return;
+
+            const { default: CreatureAttackProbabilityService } = await import(
+                SYS_PATH("module/combat/services/creature_attack_probability_service.js")
+            );
+            const choice = await CreatureAttackProbabilityService.rollAttackChoice(actor);
+            if (!choice) {
+                ui.notifications.warn(game.i18n.localize("rmss.creature_attack.random_attack_no_attacks"));
+                return;
+            }
+            await choice.attack.use();
+        }
+
+        async _onLeftClick(event) {
+            event?.preventDefault?.();
+            event?.stopPropagation?.();
+        }
+    }
+
     class RMSSAttackCategoryButton extends ButtonPanelButton {
         constructor({ key, label, icon, items }) {
             super();
@@ -116,6 +169,11 @@ export function defineAttacksMain(CoreHUD) {
 
         async _getPanel() {
             const buttons = this._items.map((item) => new RMSSAttackActionButton(item, this.key));
+            // Natural bucket only: a "roll it for me" entry driven by each creature_attack's own
+            // system.probability field, matching the creature sheet's own random-attack button.
+            if (this.key === "natural" && this._items.some((item) => item.type === "creature_attack")) {
+                buttons.unshift(new RMSSRandomAttackButton());
+            }
             const panel = new ButtonPanel({ id: `rmss-attacks-${this.key}`, buttons });
             UIGuards.attachPanelInteractionGuards(panel);
             UIGuards.capPanelHeight(panel);
