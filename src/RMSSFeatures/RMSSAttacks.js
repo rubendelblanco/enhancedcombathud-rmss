@@ -106,6 +106,16 @@ export function defineAttacksMain(CoreHUD) {
             return ICONS.natural;
         }
 
+        async _renderInner() {
+            await super._renderInner();
+            if (!this.element) return;
+            // Argon renders ActionButton elements pointer-events:none by default (see
+            // RMSSAttackActionButton/RMSSRestActionButton) - without this the click never
+            // reaches _onMouseDown at all, which is exactly "nothing happens" on click.
+            this.element.classList.add("rmss-interactive-button");
+            this.element.dataset.tooltipDirection = "UP";
+        }
+
         get hasTooltip() {
             return true;
         }
