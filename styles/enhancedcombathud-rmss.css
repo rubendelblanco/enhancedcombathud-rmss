@@ -1,6 +1,14 @@
 /* enhancedcombathud-rmss — uses Argon's own --ech-* design tokens (the host theme), not a
    custom reskin, so the HUD matches whatever Argon theme/settings the table already runs. */
 
+/* Argon core blurs every action button via a `.ech-blur::before` overlay
+   (.extended-combat-hud .ech-blur:before { backdrop-filter: var(--ech-blur-amount); ... }) -
+   washes out the background-image icons on our tiles/headers (e.g. the spell list icon just
+   added). !important since this needs to beat core's own rule regardless of load order. */
+.enhancedcombathud-rmss .ech-blur::before {
+  backdrop-filter: none !important;
+}
+
 .enhancedcombathud-rmss .rmss-button-relative { position: relative !important; }
 .enhancedcombathud-rmss .rmss-overflow-hidden { overflow: hidden !important; }
 .enhancedcombathud-rmss .rmss-interactive-button {

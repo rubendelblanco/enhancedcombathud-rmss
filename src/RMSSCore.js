@@ -30,8 +30,8 @@ const SYS_PATH = (path) => (foundry?.utils?.getRoute ? foundry.utils.getRoute(`s
  */
 const ICON_CONFIG = {
     melee: { name: "Melee Attack", default: MOD_ICON("melee.svg") },
-    ranged: { name: "Ranged Attack", default: MOD_ICON("ranged.svg") },
-    natural: { name: "Natural Attack", default: MOD_ICON("natural.svg") },
+    ranged: { name: "Ranged Attack", default: MOD_ICON("arrow-cluster.svg") },
+    natural: { name: "Natural Attack", default: MOD_ICON("claw-string.svg") },
     skills: { name: "Skills Category", default: MOD_ICON("skills.svg") },
     skills_muted: { name: "Skill Action (Muted)", default: MOD_ICON("skills_muted.svg") },
     spells: { name: "Spells Category", default: MOD_ICON("spells.svg") },
