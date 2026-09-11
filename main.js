@@ -9,7 +9,7 @@
  * weapon.use(), the spell-cast services, RestService) instead of going through a wrapper.
  */
 
-import { UIGuards, defineTooltip, defineSupportedActorTypes, registerIconSettings } from "./src/RMSSCore.js";
+import { UIGuards, defineTooltip, defineSupportedActorTypes, registerIconSettings, migrateIconDefaults } from "./src/RMSSCore.js";
 import { defineAttacksMain } from "./src/RMSSFeatures/RMSSAttacks.js";
 import { defineSkillsMain } from "./src/RMSSFeatures/RMSSSkills.js";
 import { defineSpellsMain } from "./src/RMSSFeatures/RMSSSpells.js";
@@ -66,6 +66,7 @@ Hooks.on("argonInit", (CoreHUD) => initConfig(CoreHUD));
 
 Hooks.once("ready", () => {
     console.info("[ECH-RMSS] RMSS extension is ready");
+    migrateIconDefaults();
     const body = document.body;
     if (!body.classList.contains("enhancedcombathud-rmss")) {
         body.classList.add("enhancedcombathud-rmss");

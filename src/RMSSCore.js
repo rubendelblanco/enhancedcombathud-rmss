@@ -615,6 +615,29 @@ function defineSupportedActorTypes(CoreHUD) {
     CoreHUD.defineSupportedActorTypes(["character", "npc", "creature"]);
 }
 
+/**
+ * Foundry's settings config form saves every field it renders, not just the changed ones - so
+ * opening "Configure Settings" and clicking Save once persists icon_main_ranged/icon_main_natural
+ * with whatever default was current at the time, permanently shadowing later code-default
+ * changes. Re-point a stored value to the new default only when it still exactly matches the OLD
+ * default (i.e. the GM never actually customized it away from default).
+ */
+const RETIRED_ICON_DEFAULTS = {
+    ranged: MOD_ICON("ranged.svg"),
+    natural: MOD_ICON("natural.svg"),
+};
+
+function migrateIconDefaults() {
+    if (!game.user?.isGM) return;
+    for (const [key, oldDefault] of Object.entries(RETIRED_ICON_DEFAULTS)) {
+        const settingKey = `icon_main_${key}`;
+        const current = game.settings.get(MODULE_ID, settingKey);
+        if (current === oldDefault && ICON_CONFIG[key]?.default !== oldDefault) {
+            game.settings.set(MODULE_ID, settingKey, ICON_CONFIG[key].default);
+        }
+    }
+}
+
 export {
     ICONS,
     getUserIcon,
@@ -626,6 +649,7 @@ export {
     defineTooltip,
     defineSupportedActorTypes,
     registerIconSettings,
+    migrateIconDefaults,
     getFilterActive,
     setFilterActive,
     clearAllFilters,
