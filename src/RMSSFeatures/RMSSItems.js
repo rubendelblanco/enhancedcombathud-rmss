@@ -10,11 +10,11 @@
  * MAGIC reuses castEnchantmentFromItem/getUsableEnchantmentsForItem directly (dynamic SYS_PATH
  * import, no logic duplicated here) - identical to how the sheet's own cast-magic icon behaves,
  * including the picker dialog when an item has more than one usable enchantment.
- * CONSUMABLES reuses consumeItem the same way - one click decrements quantity by 1, deleting the
- * item once it hits zero.
+ * CONSUMABLES reuses confirmAndConsumeItem the same way - asks for confirmation, then decrements
+ * quantity by 1 (deleting the item once it hits zero) and posts a chat card announcing it.
  */
 
-import { ICONS, RMSSUtils, UIGuards, getOpenCategory, setOpenCategory, SYS_PATH } from "../RMSSCore.js";
+import { ICONS, RMSSUtils, UIGuards, getOpenCategory, setOpenCategory, SYS_PATH, refreshHud } from "../RMSSCore.js";
 import { RMSSData } from "../RMSSData.js";
 
 const OPEN_STATE_KEY = "rmss-use-items";
@@ -279,8 +279,12 @@ export function defineItemsMain(CoreHUD) {
 
             const actor = RMSSData.getActiveActor();
             if (!actor || !this.item) return;
-            const { consumeItem } = await import(SYS_PATH("module/sheets/items/consume_item.js"));
-            await consumeItem(this.item);
+            const { confirmAndConsumeItem } = await import(SYS_PATH("module/sheets/items/consume_item.js"));
+            const result = await confirmAndConsumeItem(actor, this.item);
+            // The confirmation dialog steals focus for a beat - updateVisibility() alone won't
+            // repaint the list (item gone / quantity down) afterwards, same reasoning as the
+            // Equipment panel's post-swap refresh.
+            if (result.applied) refreshHud();
         }
         async _onLeftClick(event) {
             event?.preventDefault?.();
