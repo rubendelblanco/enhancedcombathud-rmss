@@ -83,10 +83,11 @@
 }
 
 /* ────────────────────────────────────────────────
-   Accordion category headers (Skills / Spells)
+   Accordion category headers (Skills / Spells / Use Items)
 ──────────────────────────────────────────────── */
 .enhancedcombathud-rmss .rmss-skill-header,
-.enhancedcombathud-rmss .rmss-spell-header {
+.enhancedcombathud-rmss .rmss-spell-header,
+.enhancedcombathud-rmss .rmss-useitems-header {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,7 +100,8 @@
 }
 
 .enhancedcombathud-rmss .rmss-skill-header.open,
-.enhancedcombathud-rmss .rmss-spell-header.open {
+.enhancedcombathud-rmss .rmss-spell-header.open,
+.enhancedcombathud-rmss .rmss-useitems-header.open {
   opacity: 1;
   border-bottom: 2px solid var(--ech-fore, #fff);
 }

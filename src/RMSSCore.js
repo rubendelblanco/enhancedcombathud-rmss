@@ -45,9 +45,11 @@ const ICON_CONFIG = {
     close: { name: "Close/Clear", default: MOD_ICON("close.svg") },
     search: { name: "Search Magnifier", default: MOD_ICON("search.svg") },
     ranked: { name: "Ranked Skill Chip", default: MOD_ICON("ranked.svg") },
-    items: { name: "Items Category", default: MOD_ICON("instant.svg") },
-    items_muted: { name: "Item Action (Muted)", default: MOD_ICON("instant.svg") },
-    equipment: { name: "Equipment Category", default: MOD_ICON("melee.svg") },
+    items: { name: "Magic Items Category", default: MOD_ICON("items.svg") },
+    items_muted: { name: "Magic Item Action (Muted)", default: MOD_ICON("instant.svg") },
+    consumables: { name: "Consumables Category", default: MOD_ICON("instant.svg") },
+    consumables_muted: { name: "Consumable Action (Muted)", default: MOD_ICON("instant.svg") },
+    equipment: { name: "Equipment Category", default: MOD_ICON("swordman.svg") },
     equipped_chip: { name: "Equipped Chip", default: MOD_ICON("ranked.svg") },
 };
 
@@ -629,6 +631,7 @@ function defineSupportedActorTypes(CoreHUD) {
 const RETIRED_ICON_DEFAULTS = {
     ranged: MOD_ICON("ranged.svg"),
     natural: MOD_ICON("natural.svg"),
+    equipment: MOD_ICON("melee.svg"),
 };
 
 function migrateIconDefaults() {

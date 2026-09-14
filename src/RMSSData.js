@@ -287,6 +287,39 @@ function getUsableMagicItems(actor) {
 }
 
 // -----------------------------------------------------------------------------
+// Plain consumables (food/drink tagged "consumable", not a potion/rune - those already get the
+// magic-cast action above via getUsableMagicItems)
+// -----------------------------------------------------------------------------
+
+/**
+ * @param {Item|{system?:object}} itemOrSystem
+ * @param {string} tag
+ * @returns {boolean}
+ */
+function _itemHasTag(itemOrSystem, tag) {
+    const sys = itemOrSystem?.system ?? itemOrSystem;
+    const raw = sys?.tags;
+    const tags = Array.isArray(raw) ? raw : typeof raw === "string" ? raw.split(",") : [];
+    return tags.some((t) => String(t).trim().toLowerCase() === tag);
+}
+
+/**
+ * Sync re-implementation of the system's itemHasConsumableTag/rmssShowConsumeAction gate
+ * (module/sheets/items/consume_item.js, module/sheets/items/cast_enchantment_from_item.js) - just
+ * enough to list/gate visibility without a dynamic SYS_PATH import, same reasoning as
+ * _hasUsableEnchantment above. The actual consumption still goes through the system's own
+ * consumeItem, unchanged.
+ * @param {Actor} actor
+ * @returns {Item[]}
+ */
+function getConsumableItems(actor) {
+    if (!actor) return [];
+    return actor.items.filter(
+        (i) => _itemHasTag(i, "consumable") && !_itemHasTag(i, "potion") && !_itemHasTag(i, "rune")
+    );
+}
+
+// -----------------------------------------------------------------------------
 // Portrait / resources
 // -----------------------------------------------------------------------------
 
@@ -353,6 +386,7 @@ export const RMSSData = {
     hasAnySpell,
     hasAnyFavoriteSpell,
     getUsableMagicItems,
+    getConsumableItems,
     getHits,
     getPowerPoints,
     getLevel,
