@@ -239,6 +239,10 @@ export function defineFavoritesMain(CoreHUD) {
         get currentActions() {
             return null;
         }
+        get visible() {
+            // No skills flagged favorite - nothing this panel could show.
+            return RMSSData.getFavoriteSkills(RMSSData.getActiveActor()).length > 0;
+        }
         async _getButtons() {
             return [new RMSSFavoriteSkillsCategoryButton()];
         }
@@ -253,6 +257,10 @@ export function defineFavoritesMain(CoreHUD) {
         }
         get currentActions() {
             return null;
+        }
+        get visible() {
+            // No spells flagged favorite - nothing this panel could show.
+            return RMSSData.hasAnyFavoriteSpell(RMSSData.getActiveActor());
         }
         async _getButtons() {
             return [new RMSSFavoriteSpellsCategoryButton()];

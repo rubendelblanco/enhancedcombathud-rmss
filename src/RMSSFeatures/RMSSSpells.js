@@ -317,6 +317,11 @@ export function defineSpellsMain(CoreHUD) {
         get currentActions() {
             return null;
         }
+        get visible() {
+            // No spell_list/spell items at all - nothing this panel could show, so hide it
+            // entirely instead of opening onto a "No spells" placeholder.
+            return RMSSData.hasAnySpell(RMSSData.getActiveActor());
+        }
         async _getButtons() {
             return [new RMSSSpellsCategoryButton()];
         }

@@ -201,6 +201,11 @@ export function defineAttacksMain(CoreHUD) {
         get currentActions() {
             return null;
         }
+        get visible() {
+            // No equipped weapon and no creature_attack items at all - nothing this panel could
+            // show, so hide it entirely instead of opening onto an empty flyout.
+            return RMSSData.getGroupedAttacks(RMSSData.getActiveActor()).size > 0;
+        }
 
         async _getButtons() {
             const actor = RMSSData.getActiveActor();

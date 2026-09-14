@@ -292,9 +292,10 @@ export function defineSkillsMain(CoreHUD) {
             return null;
         }
         get visible() {
-            // Creature actors have no skill items and no Skills tab on their own sheet - the
-            // panel has nothing to show, so hide it entirely rather than opening onto emptiness.
-            return RMSSData.getActiveActor()?.type !== "creature";
+            // No skill items at all (always true for creature actors, which have no Skills tab
+            // on their own sheet either) - nothing this panel could show, so hide it entirely
+            // rather than opening onto an empty accordion.
+            return RMSSData.getGroupedSkills(RMSSData.getActiveActor()).size > 0;
         }
         async _getButtons() {
             return [new RMSSSkillsCategoryButton()];

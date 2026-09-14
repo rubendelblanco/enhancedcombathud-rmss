@@ -142,6 +142,32 @@ function getSpellLists(actor) {
 }
 
 /**
+ * Sync, level-cap-agnostic check for "does this actor have anything to show in the Spells
+ * panel at all" - used for get visible() on the main panel, where Argon reads a plain boolean
+ * and can't await the real (async, level-capped) getGroupedSpells. Worst case a spell_list
+ * shows with all its spells above the caster's current level - the level cap grows into it
+ * later, so that's an acceptable approximation for a visibility gate.
+ * @param {Actor} actor
+ * @returns {boolean}
+ */
+function hasAnySpell(actor) {
+    if (!actor) return false;
+    const listIds = new Set(getSpellLists(actor).map((l) => l.id));
+    if (!listIds.size) return false;
+    return actor.items.some((i) => i.type === "spell" && listIds.has(i.flags?.rmss?.containerId));
+}
+
+/**
+ * Sync counterpart to getFavoriteSpells, for the same reason as hasAnySpell above.
+ * @param {Actor} actor
+ * @returns {boolean}
+ */
+function hasAnyFavoriteSpell(actor) {
+    if (!actor) return false;
+    return actor.items.some((i) => i.type === "spell" && i.system?.favorite === true);
+}
+
+/**
  * Spells contained in a spell_list use the same container-flag mechanism as every other
  * container item in rmss (see ContainerHandler / item_service.js `deleteContainer`), not a
  * nested array - spell_list.system.spells stays empty on this codebase's actual data.
@@ -258,6 +284,8 @@ export const RMSSData = {
     getSpellsInList,
     getGroupedSpells,
     getFavoriteSpells,
+    hasAnySpell,
+    hasAnyFavoriteSpell,
     getHits,
     getPowerPoints,
     getLevel,
