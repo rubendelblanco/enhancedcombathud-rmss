@@ -2,13 +2,15 @@
  * RMSSFeatures/RMSSEquipment.js
  *
  * The Equipment main panel: one button per weapon/armor item the actor owns (equipped or not),
- * so swapping gear mid-fight doesn't require opening the actor sheet. Clicking toggles equipped
- * state via EquipmentService.toggleEquipped - the exact same validated logic (hand limits,
- * armor slot conflicts, dual-wield rules) the sheet's own ".equippable" click handler uses,
- * extracted there specifically so this panel doesn't duplicate it.
+ * so swapping gear mid-fight doesn't require opening the actor sheet. Clicking calls
+ * EquipmentService.swapEquip - same validated rules as the sheet's own ".equippable" handler
+ * (hand limits, armor slot conflicts, dual-wield rules), except a would-be-blocked equip clears
+ * whatever's in the way first instead of warning and stopping, since from this panel "click a
+ * different weapon" reads as "wear this instead". Forces a HUD refresh afterwards so the
+ * "Equipped" chip updates immediately instead of only after deselecting/reselecting the token.
  */
 
-import { ICONS, RMSSUtils, UIGuards, SYS_PATH } from "../RMSSCore.js";
+import { ICONS, RMSSUtils, UIGuards, SYS_PATH, refreshHud } from "../RMSSCore.js";
 import { RMSSData } from "../RMSSData.js";
 
 /**
@@ -76,7 +78,14 @@ export function defineEquipmentMain(CoreHUD) {
             const { default: EquipmentService } = await import(
                 SYS_PATH("module/actors/services/equipment_service.js")
             );
-            await EquipmentService.toggleEquipped(actor, this.item);
+            // swapEquip, not toggleEquipped: clicking a different weapon/armor here reads as
+            // "wear this instead" - it clears whatever's in the way (hand limit, armor slot)
+            // instead of warning and blocking, the way the sheet's own equip icons still do.
+            await EquipmentService.swapEquip(actor, this.item);
+            // updateVisibility() alone doesn't repaint an already-rendered button's own chip/
+            // tooltip - force a rebind so the "Equipped" chip shows up immediately instead of
+            // only after deselecting/reselecting the token.
+            refreshHud();
         }
         async _onLeftClick(event) {
             event?.preventDefault?.();

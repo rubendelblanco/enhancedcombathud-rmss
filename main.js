@@ -9,7 +9,7 @@
  * weapon.use(), the spell-cast services, RestService) instead of going through a wrapper.
  */
 
-import { UIGuards, defineTooltip, defineSupportedActorTypes, registerIconSettings, migrateIconDefaults } from "./src/RMSSCore.js";
+import { UIGuards, defineTooltip, defineSupportedActorTypes, registerIconSettings, migrateIconDefaults, refreshHud } from "./src/RMSSCore.js";
 import { defineAttacksMain } from "./src/RMSSFeatures/RMSSAttacks.js";
 import { defineSkillsMain } from "./src/RMSSFeatures/RMSSSkills.js";
 import { defineSpellsMain } from "./src/RMSSFeatures/RMSSSpells.js";
@@ -93,18 +93,6 @@ Hooks.once("ready", () => {
 Hooks.once("shutdown", () => {
     document.body.classList.remove("enhancedcombathud-rmss");
 });
-
-/**
- * updateVisibility() alone doesn't reliably re-show a panel whose get visible() flips true on a
- * turn change (e.g. End Turn) - confirmed by testing: it only reappears after a full
- * deselect/reselect. Force a real rebind of whatever's currently bound instead, which is exactly
- * what that manual reselect does.
- */
-function refreshHud() {
-    const token = ui.ARGON?._token;
-    if (token) ui.ARGON?.bind?.(token);
-    else ui.ARGON?.components?.main?.forEach((c) => c.updateVisibility?.());
-}
 
 Hooks.on("updateCombat", refreshHud);
 Hooks.on("deleteCombat", refreshHud);

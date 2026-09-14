@@ -45,8 +45,9 @@ const ICON_CONFIG = {
     close: { name: "Close/Clear", default: MOD_ICON("close.svg") },
     search: { name: "Search Magnifier", default: MOD_ICON("search.svg") },
     ranked: { name: "Ranked Skill Chip", default: MOD_ICON("ranked.svg") },
-    items: { name: "Magic Items Category", default: MOD_ICON("potion-ball.svg") },
+    items: { name: "Use Items Category", default: MOD_ICON("items.svg") },
     items_muted: { name: "Magic Item Action (Muted)", default: MOD_ICON("instant.svg") },
+    magic: { name: "Magic Subcategory", default: MOD_ICON("potion-ball.svg") },
     consumables: { name: "Consumables Category", default: MOD_ICON("eating.svg") },
     consumables_muted: { name: "Consumable Action (Muted)", default: MOD_ICON("instant.svg") },
     equipment: { name: "Equipment Category", default: MOD_ICON("swordman.svg") },
@@ -632,9 +633,24 @@ const RETIRED_ICON_DEFAULTS = {
     ranged: MOD_ICON("ranged.svg"),
     natural: MOD_ICON("natural.svg"),
     equipment: MOD_ICON("melee.svg"),
-    items: MOD_ICON("items.svg"),
+    // "items" was briefly, mistakenly, defaulted to potion-ball.svg (that belongs to the new
+    // "magic" subcategory icon instead) - revert anyone who already reloaded on that default.
+    items: MOD_ICON("potion-ball.svg"),
     consumables: MOD_ICON("instant.svg"),
 };
+
+/**
+ * updateVisibility() alone doesn't reliably re-render a panel/button whose state flipped (e.g. an
+ * equip toggle) - confirmed by testing: it only reappears/refreshes after a full deselect/reselect
+ * of the token. Force a real rebind of whatever's currently bound instead, which is exactly what
+ * that manual reselect does. Shared by main.js's updateCombat/deleteCombat hooks and by any HUD
+ * action (equip, consume...) that needs its own visible state to update immediately.
+ */
+function refreshHud() {
+    const token = ui.ARGON?._token;
+    if (token) ui.ARGON?.bind?.(token);
+    else ui.ARGON?.components?.main?.forEach((c) => c.updateVisibility?.());
+}
 
 function migrateIconDefaults() {
     if (!game.user?.isGM) return;
@@ -664,6 +680,7 @@ export {
     clearAllFilters,
     getOpenCategory,
     setOpenCategory,
+    refreshHud,
     MODULE_ID,
     SYS_PATH,
 };

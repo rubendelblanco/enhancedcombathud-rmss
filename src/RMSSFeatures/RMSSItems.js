@@ -325,7 +325,7 @@ export function defineItemsMain(CoreHUD) {
             const headerInstances = [];
 
             if (magicItems.length) {
-                const header = new RMSSUseItemsSubcategoryHeaderButton("magic", "MAGIC", ICONS.items);
+                const header = new RMSSUseItemsSubcategoryHeaderButton("magic", "MAGIC", ICONS.magic);
                 headerInstances.push(header);
                 buttons.push(header);
                 for (const item of magicItems) buttons.push(new RMSSMagicItemActionButton(item));
