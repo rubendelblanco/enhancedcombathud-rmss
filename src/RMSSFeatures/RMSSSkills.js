@@ -218,6 +218,13 @@ export function defineSkillsMain(CoreHUD) {
         get isInteractive() {
             return true;
         }
+        get visible() {
+            // ActionPanel.updateVisibility() (Argon core) hides the whole panel only when every
+            // one of its buttons reports visible === false - there's exactly one button here (this
+            // one), so this is the actual lever for hiding the Skills panel when the actor has no
+            // skills, not a get visible() on the panel itself (which core never reads).
+            return RMSSData.getGroupedSkills(RMSSData.getActiveActor()).size > 0;
+        }
 
         async _getPanel() {
             const actor = RMSSData.getActiveActor();
@@ -290,12 +297,6 @@ export function defineSkillsMain(CoreHUD) {
         }
         get currentActions() {
             return null;
-        }
-        get visible() {
-            // No skill items at all (always true for creature actors, which have no Skills tab
-            // on their own sheet either) - nothing this panel could show, so hide it entirely
-            // rather than opening onto an empty accordion.
-            return RMSSData.getGroupedSkills(RMSSData.getActiveActor()).size > 0;
         }
         async _getButtons() {
             return [new RMSSSkillsCategoryButton()];

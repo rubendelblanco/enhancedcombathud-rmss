@@ -151,6 +151,13 @@ export function defineFavoritesMain(CoreHUD) {
         get isInteractive() {
             return true;
         }
+        get visible() {
+            // ActionPanel.updateVisibility() (Argon core) hides the whole panel only when every
+            // one of its buttons reports visible === false - there's exactly one button here
+            // (this one), so this is the actual lever, not a get visible() on the panel itself
+            // (which core never reads).
+            return RMSSData.getFavoriteSkills(RMSSData.getActiveActor()).length > 0;
+        }
         async _getPanel() {
             const actor = RMSSData.getActiveActor();
             const skills = RMSSData.getFavoriteSkills(actor);
@@ -199,6 +206,13 @@ export function defineFavoritesMain(CoreHUD) {
         get isInteractive() {
             return true;
         }
+        get visible() {
+            // ActionPanel.updateVisibility() (Argon core) hides the whole panel only when every
+            // one of its buttons reports visible === false - there's exactly one button here
+            // (this one), so this is the actual lever, not a get visible() on the panel itself
+            // (which core never reads).
+            return RMSSData.hasAnyFavoriteSpell(RMSSData.getActiveActor());
+        }
         async _getPanel() {
             const actor = RMSSData.getActiveActor();
             const entries = await RMSSData.getFavoriteSpells(actor);
@@ -239,10 +253,6 @@ export function defineFavoritesMain(CoreHUD) {
         get currentActions() {
             return null;
         }
-        get visible() {
-            // No skills flagged favorite - nothing this panel could show.
-            return RMSSData.getFavoriteSkills(RMSSData.getActiveActor()).length > 0;
-        }
         async _getButtons() {
             return [new RMSSFavoriteSkillsCategoryButton()];
         }
@@ -257,10 +267,6 @@ export function defineFavoritesMain(CoreHUD) {
         }
         get currentActions() {
             return null;
-        }
-        get visible() {
-            // No spells flagged favorite - nothing this panel could show.
-            return RMSSData.hasAnyFavoriteSpell(RMSSData.getActiveActor());
         }
         async _getButtons() {
             return [new RMSSFavoriteSpellsCategoryButton()];
