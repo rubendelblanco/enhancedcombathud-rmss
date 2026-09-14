@@ -77,6 +77,19 @@ function getAllWeapons(actor) {
     return actor.items.filter((i) => i.type === "weapon" && !i.system?.isNaturalWeapon);
 }
 
+/**
+ * All weapons and armor the actor owns that can be equipped/unequipped at all - natural
+ * weapons are always equipped (no toggle), so excluded same as getAllWeapons.
+ * @param {Actor} actor
+ * @returns {Item[]}
+ */
+function getEquippableGear(actor) {
+    if (!actor) return [];
+    return actor.items.filter(
+        (i) => (i.type === "weapon" && !i.system?.isNaturalWeapon) || i.type === "armor"
+    );
+}
+
 // -----------------------------------------------------------------------------
 // Skills
 // -----------------------------------------------------------------------------
@@ -222,6 +235,58 @@ async function getFavoriteSpells(actor) {
 }
 
 // -----------------------------------------------------------------------------
+// Magic items (potions/runes/staves/artifacts with a castable enchantment)
+// -----------------------------------------------------------------------------
+
+const MAGIC_ITEM_TYPES = ["item", "weapon", "armor"];
+
+/**
+ * Sync re-implementation of enchantment_utils.js's buildEnchantmentList canUse rule - just
+ * enough to list/gate visibility without a dynamic SYS_PATH import of system code (those are
+ * async; Argon reads a category button's visible synchronously, same reasoning as
+ * hasAnySpell above). The actual cast still goes through the system's own
+ * getUsableEnchantmentsForItem/castEnchantmentFromItem, unchanged.
+ * @param {Item} item
+ * @returns {boolean}
+ */
+function _hasUsableEnchantment(item) {
+    const enchantments = item?.system?.magic?.enchantments;
+    if (!Array.isArray(enchantments)) return false;
+    const poolCurrent = Number(item.system?.magic?.chargePool?.current) || 0;
+    return enchantments.some((e) => {
+        const usage = e?.usage ?? "passive";
+        if (usage === "single") return true;
+        if (usage === "daily") return (Number(e?.usesRemaining) ?? Number(e?.usesPerDay) ?? 0) > 0;
+        if (usage === "charged") return (Number(e?.charges) ?? Number(e?.chargesMax) ?? 0) > 0;
+        if (usage === "pooled") return poolCurrent >= Math.max(1, Number(e?.poolCost) || 1);
+        return false; // passive
+    });
+}
+
+/**
+ * Sync re-implementation of isIdentityHidden (item_identity_util.js) - one line, not worth a
+ * dynamic import.
+ * @param {Item} item
+ * @returns {boolean}
+ */
+function _isIdentityHidden(item) {
+    return item?.system?.identified === false && !game.user?.isGM;
+}
+
+/**
+ * @param {Actor} actor
+ * @returns {Item[]} weapon/armor/item items with at least one currently-usable enchantment,
+ *   excluding unidentified items (their magic is unknown to the player - same gate the sheet's
+ *   own cast-magic action icon uses)
+ */
+function getUsableMagicItems(actor) {
+    if (!actor) return [];
+    return actor.items.filter(
+        (i) => MAGIC_ITEM_TYPES.includes(i.type) && !_isIdentityHidden(i) && _hasUsableEnchantment(i)
+    );
+}
+
+// -----------------------------------------------------------------------------
 // Portrait / resources
 // -----------------------------------------------------------------------------
 
@@ -276,6 +341,7 @@ export const RMSSData = {
     bucketAttack,
     getGroupedAttacks,
     getAllWeapons,
+    getEquippableGear,
     getAllSkills,
     getSkillCategoryName,
     getGroupedSkills,
@@ -286,6 +352,7 @@ export const RMSSData = {
     getFavoriteSpells,
     hasAnySpell,
     hasAnyFavoriteSpell,
+    getUsableMagicItems,
     getHits,
     getPowerPoints,
     getLevel,

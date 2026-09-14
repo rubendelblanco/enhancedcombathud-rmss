@@ -45,6 +45,10 @@ const ICON_CONFIG = {
     close: { name: "Close/Clear", default: MOD_ICON("close.svg") },
     search: { name: "Search Magnifier", default: MOD_ICON("search.svg") },
     ranked: { name: "Ranked Skill Chip", default: MOD_ICON("ranked.svg") },
+    items: { name: "Items Category", default: MOD_ICON("instant.svg") },
+    items_muted: { name: "Item Action (Muted)", default: MOD_ICON("instant.svg") },
+    equipment: { name: "Equipment Category", default: MOD_ICON("melee.svg") },
+    equipped_chip: { name: "Equipped Chip", default: MOD_ICON("ranked.svg") },
 };
 
 /**
