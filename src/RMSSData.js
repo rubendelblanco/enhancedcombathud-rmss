@@ -367,6 +367,26 @@ function getMovementRate(actor) {
     };
 }
 
+/**
+ * Actor#system.resistance_rolls only exists on the character template (npc/creature don't have
+ * it) - same key list and shape as EffectsPopupService.showResistanceOnlyPopup's own dropdown,
+ * so a key clicked here maps 1:1 to what that dialog pre-selects.
+ * @param {Actor} actor
+ * @returns {{key: string, label: string, total: number}[]}
+ */
+const RESISTANCE_ROLL_KEYS = [
+    "channeling", "essence", "mentalism", "chann_ess", "chann_ment", "ess_ment",
+    "arcane", "poison", "disease", "fear"
+];
+function getResistanceRolls(actor) {
+    if (actor?.type !== "character") return [];
+    return RESISTANCE_ROLL_KEYS.map((key) => ({
+        key,
+        label: game.i18n.localize(`rmss.pc_sheet_resistances.${key}`),
+        total: actor.system?.resistance_rolls?.[key]?.total ?? 0,
+    }));
+}
+
 export const RMSSData = {
     getActiveToken,
     getActiveActor,
@@ -391,4 +411,5 @@ export const RMSSData = {
     getPowerPoints,
     getLevel,
     getMovementRate,
+    getResistanceRolls,
 };

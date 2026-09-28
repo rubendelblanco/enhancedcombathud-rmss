@@ -16,6 +16,7 @@ import { defineSpellsMain } from "./src/RMSSFeatures/RMSSSpells.js";
 import { defineFavoritesMain } from "./src/RMSSFeatures/RMSSFavorites.js";
 import { defineItemsMain } from "./src/RMSSFeatures/RMSSItems.js";
 import { defineEquipmentMain } from "./src/RMSSFeatures/RMSSEquipment.js";
+import { defineResistanceMain } from "./src/RMSSFeatures/RMSSResistance.js";
 import {
     defineRestMain,
     defineCombatMain,
@@ -46,6 +47,7 @@ function initConfig(CoreHUD) {
     defineSkillsMain(CoreHUD);
     defineItemsMain(CoreHUD);
     defineEquipmentMain(CoreHUD);
+    defineResistanceMain(CoreHUD);
 
     defineRestMain(CoreHUD);
     defineCombatMain(CoreHUD);

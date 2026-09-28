@@ -52,6 +52,10 @@ const ICON_CONFIG = {
     consumables_muted: { name: "Consumable Action (Muted)", default: MOD_ICON("instant.svg") },
     equipment: { name: "Equipment Category", default: MOD_ICON("swordman.svg") },
     equipped_chip: { name: "Equipped Chip", default: MOD_ICON("ranked.svg") },
+    resistance: { name: "Resistance Rolls Category", default: MOD_ICON("resistance.svg") },
+    fear: { name: "Fear Resistance", default: MOD_ICON("fear.svg") },
+    poison: { name: "Poison Resistance", default: MOD_ICON("poison.svg") },
+    disease: { name: "Disease Resistance", default: MOD_ICON("disease.svg") },
 };
 
 /**
