@@ -47,13 +47,14 @@ function initConfig(CoreHUD) {
     defineSkillsMain(CoreHUD);
     defineItemsMain(CoreHUD);
     defineEquipmentMain(CoreHUD);
-    defineResistanceMain(CoreHUD);
 
-    defineRestMain(CoreHUD);
     defineCombatMain(CoreHUD);
-
-    // Registered last so they land at the end of the main bar (right-hand side).
     defineFavoritesMain(CoreHUD);
+
+    // Resistance/Rest are used far less often than the rest - registered last so they land at
+    // the very end (right-hand side) of the main bar, Resistance then Rest.
+    defineResistanceMain(CoreHUD);
+    defineRestMain(CoreHUD);
 
     defineDrawerPanel(CoreHUD);
 }
