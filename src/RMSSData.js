@@ -29,11 +29,11 @@ function getActiveActor() {
 
 /**
  * @param {Actor} actor
- * @returns {Item[]} equipped weapons + all creature_attack items (always "equipped")
+ * @returns {Item[]} equipped weapons + natural weapons + all creature_attack items (the last two are always "equipped")
  */
 function getEquippedAttacks(actor) {
     if (!actor) return [];
-    return actor.items.filter((i) => (i.type === "weapon" && i.system?.equipped === true) || i.type === "creature_attack");
+    return actor.items.filter((i) => (i.type === "weapon" && (i.system?.equipped === true || i.system?.isNaturalWeapon === true)) || i.type === "creature_attack");
 }
 
 /**
