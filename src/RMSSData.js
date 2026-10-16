@@ -314,9 +314,22 @@ function _itemHasTag(itemOrSystem, tag) {
  */
 function getConsumableItems(actor) {
     if (!actor) return [];
+    // Herbs and poisons have their own subcategory (getHerbItems), whatever tags they carry
     return actor.items.filter(
-        (i) => _itemHasTag(i, "consumable") && !_itemHasTag(i, "potion") && !_itemHasTag(i, "rune")
+        (i) => i.type !== "herb_or_poison" && _itemHasTag(i, "consumable") && !_itemHasTag(i, "potion") && !_itemHasTag(i, "rune")
     );
+}
+
+/**
+ * Herbs and poisons (herb_or_poison items), all of them: they are all used up one at a time, whether or not they
+ * carry the "consumable" or "potion" tags. A prepared herb that is tagged as a potion is still a herb, so it
+ * lives here too, and not in MAGIC or CONSUMABLES.
+ * @param {Actor} actor
+ * @returns {Item[]}
+ */
+function getHerbItems(actor) {
+    if (!actor) return [];
+    return actor.items.filter((i) => i.type === "herb_or_poison" && (Number(i.system?.quantity) || 0) > 0);
 }
 
 // -----------------------------------------------------------------------------
@@ -407,6 +420,7 @@ export const RMSSData = {
     hasAnyFavoriteSpell,
     getUsableMagicItems,
     getConsumableItems,
+    getHerbItems,
     getHits,
     getPowerPoints,
     getLevel,

@@ -1,17 +1,19 @@
 /**
  * RMSSFeatures/RMSSItems.js
  *
- * The "USE ITEMS" main panel: an accordion with two fixed subcategories - MAGIC (weapon/armor/
- * item carrying a currently-usable enchantment: potion, rune/scroll, staff, artifact...) and
+ * The "USE ITEMS" main panel: an accordion with three fixed subcategories - MAGIC (weapon/armor/
+ * item carrying a currently-usable enchantment: potion, rune/scroll, staff, artifact...),
  * CONSUMABLES (plain items tagged "consumable" - food, drink... - that aren't already covered by
- * MAGIC). A subcategory is omitted entirely when its list is empty, same as the whole panel being
- * hidden when both are.
+ * MAGIC) and HERBS (every herb or poison, used up one at a time, tagged or not - a prepared herb
+ * tagged as a potion is still a herb). A subcategory is omitted entirely when its list is empty,
+ * same as the whole panel being hidden when all are.
  *
  * MAGIC reuses castEnchantmentFromItem/getUsableEnchantmentsForItem directly (dynamic SYS_PATH
  * import, no logic duplicated here) - identical to how the sheet's own cast-magic icon behaves,
  * including the picker dialog when an item has more than one usable enchantment.
- * CONSUMABLES reuses confirmAndConsumeItem the same way - asks for confirmation, then decrements
- * quantity by 1 (deleting the item once it hits zero) and posts a chat card announcing it.
+ * CONSUMABLES and HERBS reuse confirmAndConsumeItem the same way - asks for confirmation, then decrements
+ * quantity by 1 (deleting the item once it hits zero), runs its macro or single-use spell if it has one,
+ * and posts a chat card announcing it.
  */
 
 import { ICONS, RMSSUtils, UIGuards, getOpenCategory, setOpenCategory, SYS_PATH, refreshHud } from "../RMSSCore.js";
@@ -114,7 +116,7 @@ export function defineItemsMain(CoreHUD) {
 
     class RMSSUseItemsSubcategoryHeaderButton extends ActionButton {
         /**
-         * @param {string} key - "magic" | "consumables"
+         * @param {string} key - "magic" | "consumables" | "herbs"
          * @param {string} label
          * @param {string} icon
          */
@@ -292,6 +294,68 @@ export function defineItemsMain(CoreHUD) {
         }
     }
 
+    class RMSSHerbActionButton extends ActionButton {
+        /**
+         * @param {Item} item - a herb_or_poison item
+         */
+        constructor(item) {
+            super();
+            this.item = item;
+        }
+        get label() {
+            return this.item?.name ?? "Herb";
+        }
+        get icon() {
+            return this.item?.img || ICONS.consumables_muted;
+        }
+        get isInteractive() {
+            return true;
+        }
+        get classes() {
+            return [...super.classes.filter((c) => c !== "disabled"), "rmss-useitems-tile"];
+        }
+
+        async _renderInner() {
+            await super._renderInner();
+            if (!this.element) return;
+            this.element.classList.add("rmss-interactive-button");
+            this.element.dataset.tooltipDirection = "UP";
+            this.element.dataset.subKey = "herbs";
+            this.element.style.display = "none"; // starts hidden - subcategory not open yet
+        }
+
+        get hasTooltip() {
+            return true;
+        }
+        async getTooltipData() {
+            return {
+                title: this.label,
+                subtitle: "Herb",
+                details: RMSSUtils.formatTooltipDetails([
+                    { label: "Quantity", value: this.item?.system?.quantity ?? 1 },
+                    { label: "Codes", value: this.item?.system?.codes ?? "" },
+                ]),
+                footerText: ["Left-Click: Use 1"],
+            };
+        }
+
+        async _onMouseDown(event) {
+            if (event.button !== 0) return;
+            event.preventDefault();
+            event.stopPropagation();
+
+            const actor = RMSSData.getActiveActor();
+            if (!actor || !this.item) return;
+            const { confirmAndConsumeItem } = await import(SYS_PATH("module/sheets/items/consume_item.js"));
+            const result = await confirmAndConsumeItem(actor, this.item);
+            if (result.applied) refreshHud();
+        }
+        async _onLeftClick(event) {
+            event?.preventDefault?.();
+            event?.stopPropagation?.();
+        }
+    }
+
     class RMSSUseItemsCategoryButton extends ButtonPanelButton {
         constructor() {
             super();
@@ -317,13 +381,16 @@ export function defineItemsMain(CoreHUD) {
             // (which core never reads - see the Skills/Spells/Favorites/Equipment panels for the
             // same fix).
             const actor = RMSSData.getActiveActor();
-            return RMSSData.getUsableMagicItems(actor).length > 0 || RMSSData.getConsumableItems(actor).length > 0;
+            return RMSSData.getUsableMagicItems(actor).length > 0
+                || RMSSData.getConsumableItems(actor).length > 0
+                || RMSSData.getHerbItems(actor).length > 0;
         }
 
         async _getPanel() {
             const actor = RMSSData.getActiveActor();
             const magicItems = RMSSData.getUsableMagicItems(actor);
             const consumables = RMSSData.getConsumableItems(actor);
+            const herbs = RMSSData.getHerbItems(actor);
 
             const buttons = [];
             const headerInstances = [];
@@ -339,6 +406,12 @@ export function defineItemsMain(CoreHUD) {
                 headerInstances.push(header);
                 buttons.push(header);
                 for (const item of consumables) buttons.push(new RMSSConsumableActionButton(item));
+            }
+            if (herbs.length) {
+                const header = new RMSSUseItemsSubcategoryHeaderButton("herbs", "HERBS", ICONS.herbs);
+                headerInstances.push(header);
+                buttons.push(header);
+                for (const item of herbs) buttons.push(new RMSSHerbActionButton(item));
             }
 
             const panel = new ButtonPanel({ id: "rmss-items", buttons });

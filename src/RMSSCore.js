@@ -50,6 +50,7 @@ const ICON_CONFIG = {
     magic: { name: "Magic Subcategory", default: MOD_ICON("potion-ball.svg") },
     consumables: { name: "Consumables Category", default: MOD_ICON("eating.svg") },
     consumables_muted: { name: "Consumable Action (Muted)", default: MOD_ICON("instant.svg") },
+    herbs: { name: "Herbs Subcategory", default: MOD_ICON("herbs-bundle.svg") },
     equipment: { name: "Equipment Category", default: MOD_ICON("swordman.svg") },
     equipped_chip: { name: "Equipped Chip", default: MOD_ICON("ranked.svg") },
     resistance: { name: "Resistance Rolls Category", default: MOD_ICON("resistance.svg") },
