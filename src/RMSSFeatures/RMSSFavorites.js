@@ -95,8 +95,10 @@ export function defineFavoritesMain(CoreHUD) {
         }
         async getTooltipData() {
             const sys = this.spell?.system ?? {};
+            const casting = RMSSData.getSpellCastingBonus(RMSSData.getActiveActor(), this.spellListItem);
             const details = [
                 { label: "Level", value: sys.level },
+                { label: "Casting bonus", value: casting },
                 { label: "Duration", value: sys.duration },
                 { label: "Range", value: sys.range },
             ].filter((x) => x.value !== undefined && x.value !== null && x.value !== "");

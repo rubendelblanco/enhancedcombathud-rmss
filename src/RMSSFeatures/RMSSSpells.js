@@ -162,8 +162,10 @@ export function defineSpellsMain(CoreHUD) {
         }
         async getTooltipData() {
             const sys = this.spell?.system ?? {};
+            const casting = RMSSData.getSpellCastingBonus(RMSSData.getActiveActor(), this.spellListItem);
             const details = [
                 { label: "Level", value: sys.level },
+                { label: "Casting bonus", value: casting },
                 { label: "Area of Effect", value: sys.area_of_effect },
                 { label: "Duration", value: sys.duration },
                 { label: "Range", value: sys.range },

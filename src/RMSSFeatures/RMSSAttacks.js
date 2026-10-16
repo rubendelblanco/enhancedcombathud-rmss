@@ -55,21 +55,39 @@ export function defineAttacksMain(CoreHUD) {
             if (!this.element) return;
             this.element.classList.add("rmss-interactive-button");
             this.element.dataset.tooltipDirection = "UP";
-            RMSSUtils.applyValueOverlay(this.element, this.item?.system?.bonus ?? "", "OB");
+            // The OB shown is what the character has in this attack in total (its skill, weapon bonus included),
+            // not just the weapon's own +5/+15
+            RMSSUtils.applyValueOverlay(this.element, RMSSData.getAttackBonus(this._actor(), this.item), "OB");
         }
 
         get hasTooltip() {
             return true;
         }
 
+        _actor() {
+            return this.item?.actor ?? RMSSData.getActiveActor();
+        }
+
         async getTooltipData() {
             const sys = this.item?.system ?? {};
+            const actor = this._actor();
+            const skill = RMSSData.getAttackSkill(actor, this.item);
+            // Armor on the arms hampers missile fire; worth knowing before the attack dialog says it
+            let missilePenalty = 0;
+            try {
+                const { getMissilePenaltyForWeapon } = await import(SYS_PATH("module/core/armor/armor_penalty_service.js"));
+                missilePenalty = getMissilePenaltyForWeapon(actor, this.item);
+            } catch (e) {
+                missilePenalty = 0;
+            }
             const details = [
+                { label: "OB", value: RMSSData.getAttackBonus(actor, this.item) },
+                { label: "Skill", value: skill?.name },
+                { label: "Armor missile penalty", value: missilePenalty ? -missilePenalty : null },
                 { label: "Strength", value: sys.strength },
                 { label: "Attack Table", value: sys.attack_table },
                 { label: "Fumble", value: sys.fumble_range },
                 { label: "Breakage", value: sys.breakage_range },
-                { label: "OB", value: sys.bonus },
             ].filter((x) => x.value !== undefined && x.value !== null && x.value !== "");
 
             return {

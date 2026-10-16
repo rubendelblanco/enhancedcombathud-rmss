@@ -37,6 +37,53 @@ function getEquippedAttacks(actor) {
 }
 
 /**
+ * The skill an attack is made with: the one the weapon is linked to (system.offensive_skill holds its item id).
+ * @param {Actor} actor
+ * @param {Item} item weapon or creature_attack
+ * @returns {Item|null} null for a creature attack (its bonus is on the attack itself) or an unlinked weapon
+ */
+function getAttackSkill(actor, item) {
+    if (!actor || !item || item.type === "creature_attack") return null;
+    const skillId = item.system?.offensive_skill;
+    if (!skillId) return null;
+    return actor.items?.get?.(skillId) ?? null;
+}
+
+/**
+ * What the character has in this attack in total: the total bonus of the skill it is made with, exactly what the
+ * system uses as the OB when attacking. For a character that total already includes the equipped weapon's own
+ * bonus (+5, +15...), which the system folds into the linked skill, so the weapon's bonus is not added again.
+ * A creature attack carries its bonus itself. A weapon with no linked skill has no OB (the system uses 0).
+ * @param {Actor} actor
+ * @param {Item} item weapon or creature_attack
+ * @returns {number}
+ */
+function getAttackBonus(actor, item) {
+    if (!item) return 0;
+    if (item.type === "creature_attack") return Number(item.system?.bonus) || 0;
+    return Number(getAttackSkill(actor, item)?.system?.total_bonus) || 0;
+}
+
+/**
+ * Casting bonus of a spell: the total bonus of the skill named like its spell list. Creatures and NPCs have no
+ * such skill; they use the modifier stored on the list, or their level (same rule the casting services follow).
+ * @param {Actor} actor
+ * @param {Item} spellList the spell list item the spell belongs to
+ * @returns {number|null} null when it can't be worked out
+ */
+function getSpellCastingBonus(actor, spellList) {
+    if (!actor || !spellList) return null;
+    const skill = actor.items?.find?.((i) => i.type === "skill" && i.name === spellList.name);
+    if (skill) return Number(skill.system?.total_bonus) || 0;
+    if (actor.type === "creature" || actor.type === "npc") {
+        const stored = spellList.flags?.rmss?.spellManeuverModifier;
+        if (stored !== undefined && stored !== null) return parseInt(stored, 10) || 0;
+        return parseInt(actor.system?.attributes?.level?.value, 10) || 0;
+    }
+    return 0;
+}
+
+/**
  * @param {Item} item weapon or creature_attack
  * @returns {"melee"|"ranged"|"natural"}
  */
@@ -421,6 +468,9 @@ export const RMSSData = {
     getUsableMagicItems,
     getConsumableItems,
     getHerbItems,
+    getAttackSkill,
+    getAttackBonus,
+    getSpellCastingBonus,
     getHits,
     getPowerPoints,
     getLevel,
