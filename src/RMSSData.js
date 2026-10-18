@@ -44,6 +44,8 @@ function getEquippedAttacks(actor) {
  */
 function getAttackSkill(actor, item) {
     if (!actor || !item || item.type === "creature_attack") return null;
+    // A fixed-amount weapon has no skill: its OB is the amount itself (see getAttackBonus)
+    if (item.system?.offensive_skill === "fixed") return null;
     const skillId = item.system?.offensive_skill;
     if (!skillId) return null;
     return actor.items?.get?.(skillId) ?? null;
@@ -61,6 +63,7 @@ function getAttackSkill(actor, item) {
 function getAttackBonus(actor, item) {
     if (!item) return 0;
     if (item.type === "creature_attack") return Number(item.system?.bonus) || 0;
+    if (item.system?.offensive_skill === "fixed") return Number(item.system?.fixed_ob) || 0;
     return Number(getAttackSkill(actor, item)?.system?.total_bonus) || 0;
 }
 
